@@ -269,8 +269,9 @@ O SignalR será usado para manter o frontend sincronizado com o backend sem poll
 
 ### Frontend (mesma repo, pasta `/frontend`)
 
-- **Blazor WebAssembly** (SPA no navegador)
-- **SignalR Client** (tempo real)
+- **React** (Vite + TypeScript)
+- **SignalR Client Library** (`@microsoft/signalr`)
+- **Tailwind CSS** ou **Vanilla CSS** para estilização premium
 - Duas interfaces no mesmo app:
   - `/admin` → Painel Kanban (protegido com login)
   - `/` → Totem de autoatendimento (público)
@@ -295,7 +296,7 @@ Um único repositório, mas cada parte tem sua **pipeline separada** com path fi
 | ------------------------- | ------------------------------------------------- |
 | **Azure App Service**     | Hospedar a API + SignalR                          |
 | **Azure SQL Database**    | Banco de dados relacional                         |
-| **Azure Static Web Apps** | Hospedar o frontend Blazor WASM                   |
+| **Azure Static Web Apps** | Hospedar o frontend React                         |
 | **Azure SignalR Service** | Gerenciar conexões WebSocket em escala (opcional) |
 | **GitHub Actions**        | CI/CD pipelines (2 workflows independentes)       |
 
@@ -362,14 +363,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-node@v3
         with:
-          dotnet-version: '8.0.x'
-      - run: dotnet publish -c Release -o ./publish
+          node-version: 18
+      - run: npm install
+        working-directory: ./frontend
+      - run: npm run build
         working-directory: ./frontend
       - uses: Azure/static-web-apps-deploy@v1
         with:
-          app_location: './frontend/publish/wwwroot'
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "frontend/dist" # Vite gera na pasta dist
 ```
 
 ### Resultado
@@ -470,9 +476,10 @@ Commit nos dois     → roda AMBOS em paralelo
 - [ ] Configurar Azure SignalR Service (opcional)
 - [ ] Deploy do frontend no Static Web Apps
 
-### Fase 8 — Frontend Blazor (pasta `/frontend`)
+### Fase 8 — Frontend React (pasta `/frontend`)
 
-- [ ] Setup do projeto Blazor WASM em `frontend/`
+- [ ] Setup do projeto React com Vite + TypeScript em `frontend/`
+- [ ] Configurar Axios/Fetch e @microsoft/signalr
 - [ ] **Totem — Cliente:**
   - [ ] Tela inicial (boas-vindas + painel de prontos)
   - [ ] Tela de seleção de sanduíche
@@ -521,11 +528,15 @@ dotnet test ./backend
 ### Frontend
 
 ```bash
-# Rodar o Blazor WASM
-dotnet run --project ./frontend
+# Instalar dependências
+cd frontend
+npm install
+
+# Rodar em modo dev
+npm run dev
 ```
 
-> O frontend estará disponível em `https://localhost:5002`
+> O frontend estará disponível em `http://localhost:5173` (padrão Vite)
 
 ---
 
