@@ -1,9 +1,11 @@
 using GoodHamburger.Application.DTOs;
+using GoodHamburger.Application.Hubs;
 using GoodHamburger.Application.Interfaces;
 using GoodHamburger.Domain.Entities;
 using GoodHamburger.Domain.Enums;
 using GoodHamburger.Domain.Errors;
 using GoodHamburger.Domain.Interfaces;
+using Microsoft.AspNetCore.SignalR;
 
 namespace GoodHamburger.Application.Services;
 
@@ -12,15 +14,18 @@ public class OrderService : IOrderService
     private readonly IMenuItemRepository _menuItemRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly IPromotionService _promotionService;
+    private readonly IHubContext<OrderHub> _hubContext;
 
     public OrderService(
         IMenuItemRepository menuItemRepository,
         IOrderRepository orderRepository,
-        IPromotionService promotionService)
+        IPromotionService promotionService,
+        IHubContext<OrderHub> hubContext)
     {
         _menuItemRepository = menuItemRepository;
         _orderRepository = orderRepository;
         _promotionService = promotionService;
+        _hubContext = hubContext;
     }
 
     public OrderResponse CreateOrder(CreateOrderRequest request)
@@ -68,8 +73,71 @@ public class OrderService : IOrderService
         // 7. Salvar o pedido
         _orderRepository.Add(order);
 
-        // 8. Retornar response
+        // 8. Notificar restaurante via SignalR
+        var response = MapToResponse(order);
+        _hubContext.Clients.Group("admin").SendAsync("NewOrderReceived", response);
+
+        // 9. Retornar response
+        return response;
+    }
+
+    public OrderResponse UpdateStatus(Guid orderId, string newStatusStr)
+    {
+        // 1. Buscar pedido
+        var order = _orderRepository.GetById(orderId);
+        if (order == null)
+        {
+            throw new DomainError(DomainErrorCodes.OrderNotFound, "Pedido não encontrado.");
+        }
+
+        // 2. Tentar converter string para enum
+        if (!Enum.TryParse<OrderStatus>(newStatusStr, true, out var newStatus))
+        {
+            throw new DomainError(DomainErrorCodes.InvalidStatusTransition, $"Status inválido: {newStatusStr}");
+        }
+
+        var oldStatus = order.Status;
+
+        // 3. Alterar status (validação ocorre dentro da entidade)
+        order.ChangeStatus(newStatus);
+
+        // 4. Salvar
+        _orderRepository.Update(order);
+
+        // 5. Notificar via SignalR
+        _hubContext.Clients.Group("display").SendAsync("OrderStatusChanged", new
+        {
+            orderId = order.Id,
+            code = order.Code,
+            oldStatus = oldStatus.ToString(),
+            newStatus = order.Status.ToString()
+        });
+
+        _hubContext.Clients.Group("admin").SendAsync("OrderStatusChanged", new
+        {
+            orderId = order.Id,
+            code = order.Code,
+            oldStatus = oldStatus.ToString(),
+            newStatus = order.Status.ToString()
+        });
+
+        // Notificar grupo específico do pedido (cliente)
+        _hubContext.Clients.Group($"order-{order.Id}").SendAsync("OrderStatusChanged", new
+        {
+            orderId = order.Id,
+            code = order.Code,
+            newStatus = order.Status.ToString()
+        });
+
         return MapToResponse(order);
+    }
+
+    public List<OrderResponse> GetAllOrders()
+    {
+        return _orderRepository.GetAll()
+            .Select(MapToResponse)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToList();
     }
 
     /// <summary>

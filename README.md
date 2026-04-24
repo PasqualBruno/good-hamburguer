@@ -231,10 +231,71 @@ npm run dev
 
 ---
 
+## 🔐 Autenticação (Admin)
+
+Para acessar as rotas de gerenciamento (Kanban), o restaurante deve fazer login.
+
+| Endpoint | Método | Auth | Descrição |
+|---|---|---|---|
+| `/api/auth/login` | `POST` | ❌ | Email e senha para obter o JWT token |
+
+**Credenciais padrão (Seed):**
+- **Email:** `admin@goodhamburger.com`
+- **Senha:** `admin123`
+
+---
+
+## 📦 Gerenciamento de Pedidos (Admin)
+
+| Endpoint | Método | Auth | Descrição |
+|---|---|---|---|
+| `/api/admin/orders` | `GET` | 🔒 | Lista todos os pedidos (para o Kanban) |
+| `/api/admin/orders/{id}/status` | `PATCH` | 🔒 | Altera o status do pedido |
+
+### 🚦 Fluxo de Status e Regras
+
+Os pedidos seguem um fluxo rigoroso de transição:
+
+1. **Received** (Recebido) → `Preparing` ou `Cancelled`
+2. **Preparing** (Em preparo) → `Ready` ou `Cancelled`
+3. **Ready** (Pronto) → `Delivered`
+4. **Delivered** (Entregue) → Finalizado
+5. **Cancelled** (Cancelado) → Finalizado
+
+> [!WARNING]
+> **Validação:** O backend lançará `INVALID_STATUS_TRANSITION` se tentar pular etapas ou voltar status (ex: `Preparing` → `Received`).
+
+---
+
+## 📡 SignalR (Real-time)
+
+O backend utiliza SignalR para atualizações em tempo real no hub `/hubs/orders`.
+
+### Grupos e Eventos
+
+| Grupo | Evento | Payload | Descrição |
+|---|---|---|---|
+| `admin` | `NewOrderReceived` | `OrderResponse` | Notifica o painel admin de um novo pedido |
+| `admin` | `OrderStatusChanged` | `{ orderId, code, oldStatus, newStatus }` | Atualiza o status no Kanban |
+| `display` | `OrderStatusChanged` | `{ orderId, code, oldStatus, newStatus }` | Atualiza o telão de senhas |
+| `order-{id}` | `OrderStatusChanged` | `{ orderId, code, newStatus }` | Notifica o cliente do pedido específico |
+
+---
+
+## ❌ Códigos de Erro (Adicionais)
+
+| Código | Mensagem |
+|---|---|
+| `ORDER_NOT_FOUND` | Pedido não encontrado. |
+| `INVALID_STATUS_TRANSITION` | Transição de status inválida. |
+| `INVALID_CREDENTIALS` | Email ou senha incorretos. |
+
+---
+
 ## 📝 Observações
 
-- O cardápio é **fixo** (dados estáticos). Não há CRUD de itens.
-- O **pagamento é simulado** — sem integração com gateway.
-- O **cliente não precisa de login** — experiência de totem de autoatendimento.
-- A promoção é calculada **automaticamente** no backend ao criar o pedido.
-- Foco: **organização de código**, **modelagem de domínio** e **validações robustas**.
+- O cardápio é **fixo** (dados estáticos).
+- O **pagamento é simulado**.
+- O **cliente não precisa de login** (experiência de totem).
+- A promoção é calculada **automaticamente**.
+- O fluxo de restaurante é protegido por **JWT**.
