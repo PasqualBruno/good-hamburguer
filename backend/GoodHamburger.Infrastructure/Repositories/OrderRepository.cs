@@ -15,6 +15,16 @@ public class OrderRepository : IOrderRepository
         _orders.Add(order);
     }
 
+    public void Update(Order order)
+    {
+        var existingOrder = GetById(order.Id);
+        if (existingOrder != null)
+        {
+            var index = _orders.IndexOf(existingOrder);
+            _orders[index] = order;
+        }
+    }
+
     public Order? GetById(Guid id)
     {
         return _orders.FirstOrDefault(o => o.Id == id);

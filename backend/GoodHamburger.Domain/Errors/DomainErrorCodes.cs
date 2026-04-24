@@ -11,4 +11,7 @@ public static class DomainErrorCodes
     public const string DuplicateDrink = "DUPLICATE_DRINK";
     public const string EmptyOrder = "EMPTY_ORDER";
     public const string InvalidMenuItem = "INVALID_MENU_ITEM";
+    public const string OrderNotFound = "ORDER_NOT_FOUND";
+    public const string InvalidStatusTransition = "INVALID_STATUS_TRANSITION";
+    public const string InvalidCredentials = "INVALID_CREDENTIALS";
 }

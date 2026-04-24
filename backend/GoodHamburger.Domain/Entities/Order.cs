@@ -43,6 +43,33 @@ public class Order
     }
 
     /// <summary>
+    /// Altera o status do pedido com validação de transições permitidas.
+    /// </summary>
+    public void ChangeStatus(OrderStatus newStatus)
+    {
+        if (Status == newStatus) return;
+
+        bool isValid = Status switch
+        {
+            OrderStatus.Received => newStatus == OrderStatus.Preparing || newStatus == OrderStatus.Cancelled,
+            OrderStatus.Preparing => newStatus == OrderStatus.Ready || newStatus == OrderStatus.Cancelled,
+            OrderStatus.Ready => newStatus == OrderStatus.Delivered,
+            OrderStatus.Delivered => false,
+            OrderStatus.Cancelled => false,
+            _ => false
+        };
+
+        if (!isValid)
+        {
+            throw new GoodHamburger.Domain.Errors.DomainError(
+                GoodHamburger.Domain.Errors.DomainErrorCodes.InvalidStatusTransition,
+                $"Transição de status inválida: {Status} para {newStatus}.");
+        }
+
+        Status = newStatus;
+    }
+
+    /// <summary>
     /// Gera um código curto amigável para exibição (ex: "#A42").
     /// </summary>
     private static string GenerateCode()
