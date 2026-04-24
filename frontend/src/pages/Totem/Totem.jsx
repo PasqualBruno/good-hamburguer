@@ -30,7 +30,7 @@ export default function Totem() {
         ]);
         setMenuItems(items);
         setPromotions(promos);
-      } catch (err) {
+      } catch {
         setError('Erro ao carregar cardápio. Tente novamente.');
       } finally {
         setLoading(false);

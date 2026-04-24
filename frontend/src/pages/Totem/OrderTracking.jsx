@@ -20,14 +20,16 @@ const statusMessages = {
 };
 
 function Confetti() {
-  const colors = ['#f59e0b', '#ef4444', '#22c55e', '#3b82f6', '#fbbf24', '#a855f7'];
-  const pieces = Array.from({ length: 40 }, (_, i) => ({
-    id: i,
-    left: `${Math.random() * 100}%`,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    delay: `${Math.random() * 2}s`,
-    size: `${6 + Math.random() * 8}px`,
-  }));
+  const [pieces] = useState(() => {
+    const colors = ['#f59e0b', '#ef4444', '#22c55e', '#3b82f6', '#fbbf24', '#a855f7'];
+    return Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      delay: `${Math.random() * 2}s`,
+      size: `${6 + Math.random() * 8}px`,
+    }));
+  });
 
   return (
     <div className="confetti-container">
