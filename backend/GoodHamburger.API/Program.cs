@@ -6,16 +6,20 @@ using GoodHamburger.Application.Services;
 using GoodHamburger.Domain.Interfaces;
 using GoodHamburger.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using GoodHamburger.Infrastructure.Context;
+using GoodHamburger.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// === Services ===
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 
-// === JWT Authentication ===
+builder.Services.AddDbContext<GoodHamburgerDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=goodhamburger.db"));
+
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Secret"] ?? "SecretKeyMuitoLongaESegura1234567890");
 builder.Services.AddAuthentication(x =>
 {
@@ -30,36 +34,30 @@ builder.Services.AddAuthentication(x =>
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false, // Em prod configurar Issuer e Audience
+        ValidateIssuer = false,
         ValidateAudience = false
     };
 });
 
-// === Swagger / OpenAPI ===
 builder.Services.AddOpenApi();
 
-// === CORS ===
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173", "http://localhost:3000") // Origens do React
+            .WithOrigins("http://localhost:5173", "http://localhost:3000")
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials(); // Importante para SignalR
+            .AllowCredentials();
     });
 });
 
-// === Dependency Injection ===
+builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+builder.Services.AddScoped<IPromotionRepository, PromotionRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-// Repositories (Singleton — in-memory)
-builder.Services.AddSingleton<IMenuItemRepository, MenuItemRepository>();
-builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
-builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
-builder.Services.AddSingleton<IUserRepository, UserRepository>();
-
-// Services
 builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddScoped<IPromotionService, PromotionService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
@@ -67,13 +65,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
-// === Middleware Pipeline ===
 app.UseMiddleware<DomainErrorMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(); // Acessível em /scalar/v1
+    app.MapScalarApiReference();
 }
 
 app.UseCors("AllowFrontend");
@@ -84,5 +81,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<OrderHub>("/hubs/orders");
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<GoodHamburgerDbContext>();
+    context.Database.Migrate();
+    DbSeeder.Seed(context);
+}
 
 app.Run();

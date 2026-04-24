@@ -19,9 +19,6 @@ public class Promotion
         RequiredTypes = requiredTypes;
     }
 
-    /// <summary>
-    /// Verifica se os tipos de itens fornecidos atendem aos requisitos desta promoção.
-    /// </summary>
     public bool IsApplicable(IEnumerable<MenuItemType> itemTypes)
     {
         var typesSet = new HashSet<MenuItemType>(itemTypes);

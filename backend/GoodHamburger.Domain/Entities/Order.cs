@@ -17,9 +17,6 @@ public class Order
 
     public Order() { }
 
-    /// <summary>
-    /// Cria um novo pedido com cálculos de subtotal, desconto e total.
-    /// </summary>
     public static Order Create(List<OrderItem> items, Promotion? promotion)
     {
         var subtotal = items.Sum(i => i.UnitPrice);
@@ -42,9 +39,6 @@ public class Order
         };
     }
 
-    /// <summary>
-    /// Altera o status do pedido com validação de transições permitidas.
-    /// </summary>
     public void ChangeStatus(OrderStatus newStatus)
     {
         if (Status == newStatus) return;
@@ -69,9 +63,6 @@ public class Order
         Status = newStatus;
     }
 
-    /// <summary>
-    /// Gera um código curto amigável para exibição (ex: "#A42").
-    /// </summary>
     private static string GenerateCode()
     {
         var random = new Random();

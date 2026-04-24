@@ -15,11 +15,6 @@ public class OrdersController : ControllerBase
         _orderService = orderService;
     }
 
-    /// <summary>
-    /// Cria um novo pedido completo.
-    /// Valida itens, aplica promoção automaticamente, calcula totais e salva.
-    /// Retorna 201 com o pedido criado ou 400 com código de erro.
-    /// </summary>
     [HttpPost]
     public IActionResult Create([FromBody] CreateOrderRequest request)
     {
@@ -27,10 +22,6 @@ public class OrdersController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
     }
 
-    /// <summary>
-    /// Busca um pedido pelo ID.
-    /// Usado pelo cliente para acompanhar o status (Follow Order).
-    /// </summary>
     [HttpGet("{id}")]
     public IActionResult GetById(Guid id)
     {
@@ -38,10 +29,6 @@ public class OrdersController : ControllerBase
         return Ok(order);
     }
 
-    /// <summary>
-    /// Lista pedidos ativos (Não entregues/cancelados).
-    /// Usado pelo Telão (Display Board).
-    /// </summary>
     [HttpGet("active")]
     public IActionResult GetActive()
     {

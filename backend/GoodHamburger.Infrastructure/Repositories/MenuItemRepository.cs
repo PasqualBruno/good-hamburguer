@@ -1,14 +1,25 @@
 using GoodHamburger.Domain.Entities;
 using GoodHamburger.Domain.Interfaces;
-using GoodHamburger.Infrastructure.Data;
+using GoodHamburger.Infrastructure.Context;
 
 namespace GoodHamburger.Infrastructure.Repositories;
 
 public class MenuItemRepository : IMenuItemRepository
 {
-    private readonly List<MenuItem> _items = MenuItemData.GetAll();
+    private readonly GoodHamburgerDbContext _context;
 
-    public List<MenuItem> GetAll() => _items;
+    public MenuItemRepository(GoodHamburgerDbContext context)
+    {
+        _context = context;
+    }
 
-    public MenuItem? GetById(int id) => _items.FirstOrDefault(i => i.Id == id);
+    public List<MenuItem> GetAll()
+    {
+        return _context.MenuItems.ToList();
+    }
+
+    public MenuItem? GetById(int id)
+    {
+        return _context.MenuItems.Find(id);
+    }
 }

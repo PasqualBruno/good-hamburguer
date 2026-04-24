@@ -1,15 +1,20 @@
 using GoodHamburger.Domain.Entities;
 using GoodHamburger.Domain.Interfaces;
-using GoodHamburger.Infrastructure.Data;
+using GoodHamburger.Infrastructure.Context;
 
 namespace GoodHamburger.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly List<User> _users = UserData.GetAll();
+    private readonly GoodHamburgerDbContext _context;
+
+    public UserRepository(GoodHamburgerDbContext context)
+    {
+        _context = context;
+    }
 
     public User? GetByEmail(string email)
     {
-        return _users.FirstOrDefault(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+        return _context.Users.FirstOrDefault(u => u.Email.ToLower() == email.ToLower());
     }
 }

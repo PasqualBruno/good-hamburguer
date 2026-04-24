@@ -30,7 +30,6 @@ public class OrderService : IOrderService
 
     public OrderResponse CreateOrder(CreateOrderRequest request)
     {
-        // 1. Validar se lista não está vazia
         if (request.MenuItemIds == null || request.MenuItemIds.Count == 0)
         {
             throw new DomainError(
@@ -38,7 +37,6 @@ public class OrderService : IOrderService
                 "O pedido deve conter pelo menos 1 item.");
         }
 
-        // 2. Buscar os MenuItems pelos IDs
         var menuItems = new List<MenuItem>();
         foreach (var id in request.MenuItemIds)
         {
@@ -52,10 +50,8 @@ public class OrderService : IOrderService
             menuItems.Add(item);
         }
 
-        // 3. Validar duplicatas por tipo (máximo 1 de cada)
         ValidateNoDuplicateTypes(menuItems);
 
-        // 4. Criar OrderItems a partir dos MenuItems
         var orderItems = menuItems.Select(item => new OrderItem(
             menuItemId: item.Id,
             menuItemName: item.Name,
@@ -63,34 +59,27 @@ public class OrderService : IOrderService
             type: item.Type
         )).ToList();
 
-        // 5. Encontrar a melhor promoção aplicável
         var itemTypes = menuItems.Select(i => i.Type);
         var promotion = _promotionService.FindBestPromotion(itemTypes);
 
-        // 6. Criar o pedido (calcula subtotal, desconto, total)
         var order = Order.Create(orderItems, promotion);
 
-        // 7. Salvar o pedido
         _orderRepository.Add(order);
 
-        // 8. Notificar restaurante via SignalR
         var response = MapToResponse(order);
         _hubContext.Clients.Group("admin").SendAsync("NewOrderReceived", response);
 
-        // 9. Retornar response
         return response;
     }
 
     public OrderResponse UpdateStatus(Guid orderId, string newStatusStr)
     {
-        // 1. Buscar pedido
         var order = _orderRepository.GetById(orderId);
         if (order == null)
         {
             throw new DomainError(DomainErrorCodes.OrderNotFound, "Pedido não encontrado.");
         }
 
-        // 2. Tentar converter string para enum
         if (!Enum.TryParse<OrderStatus>(newStatusStr, true, out var newStatus))
         {
             throw new DomainError(DomainErrorCodes.InvalidStatusTransition, $"Status inválido: {newStatusStr}");
@@ -98,13 +87,10 @@ public class OrderService : IOrderService
 
         var oldStatus = order.Status;
 
-        // 3. Alterar status (validação ocorre dentro da entidade)
         order.ChangeStatus(newStatus);
 
-        // 4. Salvar
         _orderRepository.Update(order);
 
-        // 5. Notificar via SignalR
         _hubContext.Clients.Group("display").SendAsync("OrderStatusChanged", new
         {
             orderId = order.Id,
@@ -121,7 +107,6 @@ public class OrderService : IOrderService
             newStatus = order.Status.ToString()
         });
 
-        // Notificar grupo específico do pedido (cliente)
         _hubContext.Clients.Group($"order-{order.Id}").SendAsync("OrderStatusChanged", new
         {
             orderId = order.Id,
@@ -152,7 +137,6 @@ public class OrderService : IOrderService
 
     public List<OrderResponse> GetActiveOrders()
     {
-        // Retorna pedidos que ainda não foram entregues nem cancelados
         return _orderRepository.GetAll()
             .Where(o => o.Status != OrderStatus.Delivered && o.Status != OrderStatus.Cancelled)
             .Select(MapToResponse)
@@ -160,9 +144,6 @@ public class OrderService : IOrderService
             .ToList();
     }
 
-    /// <summary>
-    /// Valida que não há mais de 1 item do mesmo tipo no pedido.
-    /// </summary>
     private static void ValidateNoDuplicateTypes(List<MenuItem> items)
     {
         var typeCounts = items.GroupBy(i => i.Type)
@@ -205,7 +186,7 @@ public class OrderService : IOrderService
             }).ToList(),
             Subtotal = order.Subtotal,
             PromotionName = order.PromotionName,
-            DiscountPercent = order.DiscountPercent * 100, // 0.20 → 20
+            DiscountPercent = order.DiscountPercent * 100,
             DiscountValue = order.DiscountValue,
             Total = order.Total,
             Status = order.Status.ToString(),

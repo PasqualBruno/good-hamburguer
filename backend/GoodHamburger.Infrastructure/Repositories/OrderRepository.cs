@@ -1,37 +1,42 @@
 using GoodHamburger.Domain.Entities;
 using GoodHamburger.Domain.Interfaces;
+using GoodHamburger.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace GoodHamburger.Infrastructure.Repositories;
 
-/// <summary>
-/// Repositório de pedidos em memória. Será substituído por EF Core + SQL Server no futuro.
-/// </summary>
 public class OrderRepository : IOrderRepository
 {
-    private readonly List<Order> _orders = new();
+    private readonly GoodHamburgerDbContext _context;
+
+    public OrderRepository(GoodHamburgerDbContext context)
+    {
+        _context = context;
+    }
 
     public void Add(Order order)
     {
-        _orders.Add(order);
+        _context.Orders.Add(order);
+        _context.SaveChanges();
     }
 
     public void Update(Order order)
     {
-        var existingOrder = GetById(order.Id);
-        if (existingOrder != null)
-        {
-            var index = _orders.IndexOf(existingOrder);
-            _orders[index] = order;
-        }
+        _context.Orders.Update(order);
+        _context.SaveChanges();
     }
 
     public Order? GetById(Guid id)
     {
-        return _orders.FirstOrDefault(o => o.Id == id);
+        return _context.Orders
+            .Include(o => o.Items)
+            .FirstOrDefault(o => o.Id == id);
     }
 
     public List<Order> GetAll()
     {
-        return _orders.ToList();
+        return _context.Orders
+            .Include(o => o.Items)
+            .ToList();
     }
 }
