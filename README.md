@@ -221,13 +221,13 @@ dotnet restore ./backend
 dotnet run --project ./backend/GoodHamburger.API
 ```
 
-> A API estará disponível em `http://localhost:5205`.
+> A API estará disponível em `http://localhost:5020`.
 
 ### 📖 Documentação Interativa (Scalar UI)
 
 No .NET 10, utilizamos o **Scalar** para documentação. Ele substitui o Swagger tradicional com uma interface mais moderna.
 
-- **Acesse em:** `http://localhost:5205/scalar/v1`
+- **Acesse em:** `http://localhost:5020/scalar/v1`
 
 ---
 
