@@ -23,8 +23,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Expose port (Render will use this)
+# Expose port (Documentation only, Heroku overrides this)
 EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
 
-ENTRYPOINT ["dotnet", "GoodHamburger.API.dll"]
+# Use CMD to allow Heroku to inject the $PORT variable into ASPNETCORE_URLS
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet GoodHamburger.API.dll
