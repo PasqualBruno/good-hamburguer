@@ -140,6 +140,26 @@ public class OrderService : IOrderService
             .ToList();
     }
 
+    public OrderResponse GetOrderById(Guid id)
+    {
+        var order = _orderRepository.GetById(id);
+        if (order == null)
+        {
+            throw new DomainError(DomainErrorCodes.OrderNotFound, "Pedido não encontrado.");
+        }
+        return MapToResponse(order);
+    }
+
+    public List<OrderResponse> GetActiveOrders()
+    {
+        // Retorna pedidos que ainda não foram entregues nem cancelados
+        return _orderRepository.GetAll()
+            .Where(o => o.Status != OrderStatus.Delivered && o.Status != OrderStatus.Cancelled)
+            .Select(MapToResponse)
+            .OrderBy(o => o.CreatedAt)
+            .ToList();
+    }
+
     /// <summary>
     /// Valida que não há mais de 1 item do mesmo tipo no pedido.
     /// </summary>

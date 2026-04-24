@@ -57,6 +57,8 @@ As promoções são aplicadas **automaticamente** com base nos itens do pedido.
 | Método | Rota          | Descrição                                                   |
 | ------ | ------------- | ----------------------------------------------------------- |
 | `POST` | `/api/orders` | Cria um pedido completo (valida, calcula promoção e salva)  |
+| `GET`  | `/api/orders/{id}` | Busca um pedido específico (para o cliente acompanhar) |
+| `GET`  | `/api/orders/active` | Lista pedidos ativos (para o telão/display) |
 
 ### SignalR
 
@@ -219,19 +221,33 @@ dotnet restore ./backend
 dotnet run --project ./backend/GoodHamburger.API
 ```
 
-> A API estará disponível em `http://localhost:5000` com Swagger em `/swagger`
+> A API estará disponível em `http://localhost:5205`.
 
-### Frontend (futuro)
+### 📖 Documentação Interativa (Scalar UI)
 
-```bash
-cd frontend
-npm install
-npm run dev
+No .NET 10, utilizamos o **Scalar** para documentação. Ele substitui o Swagger tradicional com uma interface mais moderna.
+
+- **Acesse em:** `http://localhost:5205/scalar/v1`
+
+---
+
+## 🔐 Autenticação e Rotas Protegidas
+
+As rotas administrativas requerem um token JWT.
+
+### 1. Obter Token (Login)
+Faça um `POST` para `/api/auth/login` com as credenciais admin. Você receberá um campo `token`.
+
+### 2. Usar o Token
+Para acessar rotas como `GET /api/admin/orders`, você deve enviar o token no cabeçalho (header) da requisição:
+
+```http
+Authorization: Bearer <SEU_TOKEN_AQUI>
 ```
 
 ---
 
-## 🔐 Autenticação (Admin)
+## 🔐 Credenciais Admin (Seed)
 
 Para acessar as rotas de gerenciamento (Kanban), o restaurante deve fazer login.
 

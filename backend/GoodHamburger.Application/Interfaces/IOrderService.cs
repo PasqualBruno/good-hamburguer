@@ -7,4 +7,6 @@ public interface IOrderService
     OrderResponse CreateOrder(CreateOrderRequest request);
     OrderResponse UpdateStatus(Guid orderId, string newStatus);
     List<OrderResponse> GetAllOrders();
+    OrderResponse GetOrderById(Guid id);
+    List<OrderResponse> GetActiveOrders();
 }

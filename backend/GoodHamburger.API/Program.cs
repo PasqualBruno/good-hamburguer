@@ -7,6 +7,7 @@ using GoodHamburger.Domain.Interfaces;
 using GoodHamburger.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,7 @@ app.UseMiddleware<DomainErrorMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(); // Acessível em /scalar/v1
 }
 
 app.UseCors("AllowFrontend");

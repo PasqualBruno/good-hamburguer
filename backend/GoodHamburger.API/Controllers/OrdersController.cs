@@ -24,6 +24,28 @@ public class OrdersController : ControllerBase
     public IActionResult Create([FromBody] CreateOrderRequest request)
     {
         var order = _orderService.CreateOrder(request);
-        return CreatedAtAction(nameof(Create), new { id = order.Id }, order);
+        return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+    }
+
+    /// <summary>
+    /// Busca um pedido pelo ID.
+    /// Usado pelo cliente para acompanhar o status (Follow Order).
+    /// </summary>
+    [HttpGet("{id}")]
+    public IActionResult GetById(Guid id)
+    {
+        var order = _orderService.GetOrderById(id);
+        return Ok(order);
+    }
+
+    /// <summary>
+    /// Lista pedidos ativos (Não entregues/cancelados).
+    /// Usado pelo Telão (Display Board).
+    /// </summary>
+    [HttpGet("active")]
+    public IActionResult GetActive()
+    {
+        var orders = _orderService.GetActiveOrders();
+        return Ok(orders);
     }
 }
