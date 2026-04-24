@@ -1,0 +1,212 @@
+.order-tracking {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
+    var(--bg-primary);
+  text-align: center;
+}
+
+.order-tracking__card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  animation: fadeInScale 500ms ease forwards;
+}
+
+.order-tracking__code {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.order-tracking__label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Progress Steps */
+.order-tracking__progress {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 400px;
+  margin: 16px 0;
+}
+
+.order-tracking__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+}
+
+.order-tracking__step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  border: 2px solid var(--border-default);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  transition: all var(--transition-base);
+  z-index: 1;
+}
+
+.order-tracking__step--active .order-tracking__step-dot {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--text-inverse);
+  box-shadow: 0 0 16px var(--accent-primary-glow);
+  animation: pulse 2s infinite;
+}
+
+.order-tracking__step--done .order-tracking__step-dot {
+  background: var(--accent-green);
+  border-color: var(--accent-green);
+  color: white;
+}
+
+.order-tracking__step--cancelled .order-tracking__step-dot {
+  background: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  color: white;
+}
+
+.order-tracking__step-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.order-tracking__step--active .order-tracking__step-label,
+.order-tracking__step--done .order-tracking__step-label {
+  color: var(--text-secondary);
+}
+
+.order-tracking__step-line {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--border-default);
+  z-index: 0;
+}
+
+.order-tracking__step--done .order-tracking__step-line {
+  background: var(--accent-green);
+}
+
+.order-tracking__step:last-child .order-tracking__step-line {
+  display: none;
+}
+
+/* Status message */
+.order-tracking__status-msg {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.order-tracking__status-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  max-width: 320px;
+}
+
+/* Items */
+.order-tracking__items {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.order-tracking__item-chip {
+  padding: 6px 14px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.order-tracking__total {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent-primary);
+}
+
+.order-tracking__btn {
+  padding: 12px 32px;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+  margin-top: 8px;
+}
+
+.order-tracking__btn:hover {
+  background: var(--bg-glass-hover);
+  border-color: var(--border-default);
+  color: var(--text-primary);
+}
+
+/* Confetti */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  animation: confetti-fall 3s linear forwards;
+}
+
+/* Cancelled */
+.order-tracking__cancelled {
+  color: var(--accent-secondary);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.order-tracking__loading {
+  color: var(--text-muted);
+  font-size: 1rem;
+}

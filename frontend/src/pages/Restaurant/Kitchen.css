@@ -1,0 +1,115 @@
+.kitchen {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.kitchen__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.kitchen__header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.kitchen__header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.kitchen__header-emoji {
+  font-size: 1.4rem;
+}
+
+.kitchen__header-title {
+  font-size: 1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-primary), #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.kitchen__header-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-primary);
+}
+
+.kitchen__header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.kitchen__connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  animation: pulse 2s infinite;
+}
+
+.kitchen__connection-dot--disconnected {
+  background: var(--accent-secondary);
+  animation: none;
+}
+
+.kitchen__btn-logout {
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.kitchen__btn-logout:hover {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+}
+
+.kitchen__board {
+  display: flex;
+  gap: 16px;
+  padding: 24px 32px;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.kitchen__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: var(--text-muted);
+}
+
+.kitchen__error {
+  position: fixed;
+  top: 70px;
+  right: 24px;
+  z-index: 100;
+}
+
+@media (max-width: 1024px) {
+  .kitchen__board {
+    padding: 16px;
+  }
+}

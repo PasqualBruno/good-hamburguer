@@ -1,0 +1,135 @@
+.totem {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 10% 20%, rgba(245, 158, 11, 0.04) 0%, transparent 40%),
+    var(--bg-primary);
+}
+
+.totem__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.totem__header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.totem__header-brand:hover {
+  opacity: 0.8;
+}
+
+.totem__header-emoji {
+  font-size: 1.5rem;
+}
+
+.totem__header-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-primary), #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.totem__header-back {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.totem__header-back:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-default);
+}
+
+.totem__content {
+  display: flex;
+  gap: 32px;
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.totem__menu {
+  flex: 1;
+}
+
+.totem__sidebar {
+  width: 340px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+}
+
+.totem__section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.totem__section-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  margin-top: -12px;
+}
+
+.totem__group {
+  margin-bottom: 32px;
+}
+
+.totem__group-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  padding-left: 4px;
+}
+
+.totem__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.totem__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .totem__content {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .totem__sidebar {
+    width: 100%;
+    position: static;
+  }
+}

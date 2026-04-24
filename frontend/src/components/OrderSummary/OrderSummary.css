@@ -1,0 +1,136 @@
+.order-summary {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-summary__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.order-summary__empty {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.order-summary__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-summary__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--bg-glass);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  animation: fadeIn 200ms ease forwards;
+}
+
+.order-summary__item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-summary__item-emoji {
+  font-size: 1.3rem;
+}
+
+.order-summary__item-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.order-summary__item-price {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+}
+
+.order-summary__divider {
+  height: 1px;
+  background: var(--border-subtle);
+}
+
+.order-summary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.order-summary__row--subtotal {
+  color: var(--text-secondary);
+}
+
+.order-summary__row--promo {
+  color: var(--accent-green);
+  font-weight: 500;
+}
+
+.order-summary__row--promo-name {
+  font-size: 0.8rem;
+  color: var(--accent-green);
+  opacity: 0.8;
+}
+
+.order-summary__row--total {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.order-summary__btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all var(--transition-base);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-summary__btn--confirm {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}
+
+.order-summary__btn--confirm:hover {
+  background: var(--accent-primary-hover);
+  box-shadow: var(--shadow-glow);
+}
+
+.order-summary__btn--confirm:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.order-summary__btn--clear {
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.order-summary__btn--clear:hover {
+  color: var(--accent-secondary);
+}
