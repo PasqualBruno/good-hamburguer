@@ -1,16 +1,10 @@
-# 🍔 Good Hamburger - Sistema de Pedidos
+# 🍔 Good Hamburger
 
-Sistema para registro de pedidos de uma lanchonete, construído com **C# / ASP.NET Core** no backend e deploy na **Azure**.
-
-Conta com dois perfis de uso: um **painel administrativo para o restaurante** (estilo Kanban/KDS) e uma **interface de autoatendimento para o cliente** (estilo totem McDonald's) com notificações em tempo real.
+Sistema de pedidos para lanchonete com promoções automáticas. Backend em **C# / .NET 10** com **SignalR** para tempo real, frontend em **React**.
 
 ---
 
-## 📋 Sobre o Desafio
-
-API REST para gerenciar pedidos de uma lanchonete com as seguintes regras de negócio:
-
-### Cardápio
+## 📋 Cardápio
 
 | Tipo           | Item         | Preço   |
 | -------------- | ------------ | ------- |
@@ -18,492 +12,202 @@ API REST para gerenciar pedidos de uma lanchonete com as seguintes regras de neg
 | Sanduíche      | X Egg        | R$ 4,50 |
 | Sanduíche      | X Bacon      | R$ 7,00 |
 | Acompanhamento | Batata Frita | R$ 2,00 |
-| Acompanhamento | Refrigerante | R$ 2,50 |
-
-### Regras de Desconto
-
-| Combinação                        | Desconto |
-| --------------------------------- | -------- |
-| Sanduíche + Batata + Refrigerante | 20%      |
-| Sanduíche + Refrigerante          | 15%      |
-| Sanduíche + Batata                | 10%      |
-
-### Restrições
-
-- Cada pedido pode conter **apenas um sanduíche, uma batata e um refrigerante**
-- Itens duplicados devem retornar mensagem de erro clara
+| Bebida         | Refrigerante | R$ 2,50 |
 
 ---
 
-## 👥 Tipos de Usuário e Fluxos
+## 🎉 Promoções
 
-### 🏪 Usuário Restaurante (Admin)
+As promoções são aplicadas **automaticamente** com base nos itens do pedido.
 
-Acesso protegido com **login e senha simples**. É quem gerencia os pedidos que chegam.
+| Promoção              | Condição                          | Desconto |
+| --------------------- | --------------------------------- | -------- |
+| **Combo Completo**    | Sanduíche + Batata + Refrigerante | 20%      |
+| **Combo Verão**       | Sanduíche + Refrigerante          | 15%      |
+| **Combo Barriga Cheia** | Sanduíche + Batata              | 10%      |
 
-**Fluxo:**
-
-```
-Login → Painel Kanban (KDS) → Gerenciar pedidos por status → Logout
-```
-
-**Funcionalidades:**
-
-- Autenticação simples (email + senha, JWT)
-- **Painel Kanban / KDS (Kitchen Display System)** com colunas:
-
-| Coluna        | Descrição                                   |
-| ------------- | ------------------------------------------- |
-| 📥 Recebido   | Pedido acabou de chegar (cliente finalizou) |
-| 🔥 Em Preparo | Cozinha iniciou a preparação                |
-| ✅ Pronto     | Pedido finalizado, aguardando retirada      |
-| 📦 Entregue   | Cliente retirou (histórico)                 |
-
-- **Drag & drop** para mover pedidos entre colunas
-- Ao mover para "Pronto", **dispara notificação em tempo real** para o cliente
-- Visualização dos detalhes do pedido (itens, valor, desconto aplicado)
-- Indicador visual de tempo (quanto tempo o pedido está em cada etapa)
-
-> 💡 **Referência real**: Restaurantes usam o chamado **KDS (Kitchen Display System)**, que funciona exatamente como um Kanban. O iFood, por exemplo, tem um painel parecido para os restaurantes parceiros. A ideia é a mesma.
+> A melhor promoção aplicável é escolhida automaticamente (maior desconto).
 
 ---
 
-### 🧑‍💻 Usuário Cliente (Autoatendimento)
+## ⚠️ Regras
 
-Sem login. Interface de **totem de autoatendimento** estilo McDonald's.
-
-**Fluxo completo:**
-
-```
-Tela Inicial → Escolher Sanduíche → Escolher Acompanhamentos → Resumo do Pedido
-→ Tela de Pagamento (simulada) → Tela de Acompanhamento → Notificação de Pronto
-```
-
-**Telas do Cliente:**
-
-#### 1. 🏠 Tela Inicial
-
-- Boas-vindas com branding do restaurante
-- Botão "Fazer Pedido"
-- Mostrar painel de pedidos prontos (visível para todos)
-
-#### 2. 🍔 Seleção do Sanduíche
-
-- Cards visuais dos sanduíches (imagem, nome, preço)
-- Seleção única (apenas 1 sanduíche)
-
-#### 3. 🍟 Seleção de Acompanhamentos
-
-- Cards de Batata Frita e Refrigerante
-- Seleção opcional (pode pular)
-- Preview do desconto que será aplicado conforme seleção
-
-#### 4. 📋 Resumo do Pedido
-
-- Lista de itens selecionados
-- Subtotal, desconto aplicado (com indicação da regra), total final
-- Botões "Voltar" e "Ir para Pagamento"
-
-#### 5. 💳 Tela de Pagamento (Simulada)
-
-- Simulação visual de pagamento (animação de processamento)
-- Não há integração real com gateway de pagamento
-- Após "pagamento", pedido é criado na API com status "Recebido"
-
-#### 6. 📺 Tela de Acompanhamento (Estilo McDonald's)
-
-- **Dois painéis lado a lado:**
-
-| Painel Esquerdo          | Painel Direito             |
-| ------------------------ | -------------------------- |
-| 🔄 **Em Preparo**        | ✅ **Pronto para Retirar** |
-| Lista de números/códigos | Lista de números/códigos   |
-
-- O número do pedido do cliente fica **destacado**
-- **Atualização em tempo real** via SignalR (sem refresh)
-- Quando o pedido muda para "Pronto", exibe **notificação visual + sonora**
+- Cada pedido pode ter **no máximo 1 item de cada tipo** (1 sanduíche, 1 acompanhamento, 1 bebida)
+- Itens são **opcionais** — o pedido precisa ter pelo menos 1 item
+- Itens duplicados por tipo retornam erro com código específico
 
 ---
 
-## 🔔 Comunicação em Tempo Real (SignalR)
-
-O SignalR será usado para manter o frontend sincronizado com o backend sem polling.
-
-### Eventos do Hub
-
-| Evento               | Direção         | Descrição                                          |
-| -------------------- | --------------- | -------------------------------------------------- |
-| `OrderStatusChanged` | Server → Client | Pedido mudou de status (ex: Em Preparo → Pronto)   |
-| `NewOrderReceived`   | Server → Client | Novo pedido chegou (notifica o painel do admin)    |
-| `OrderReady`         | Server → Client | Pedido específico está pronto (notifica o cliente) |
-
-### Grupos SignalR
-
-- **`admin`** — todos os usuários do restaurante recebem atualizações do Kanban
-- **`order-{id}`** — cliente específico acompanhando seu pedido
-- **`display`** — tela geral de acompanhamento (painel McDonald's)
-
----
-
-## 🏗️ Arquitetura - 4 Camadas
-
-```
-📦 good-hamburger/                        (monorepo)
-├── 📂 .github/
-│   └── 📂 workflows/
-│       ├── 📄 backend-ci.yml             → CI/CD backend (path filter: backend/**)
-│       └── 📄 frontend-ci.yml            → CI/CD frontend (path filter: frontend/**)
-├── 📂 backend/
-│   ├── 📂 GoodHamburger.API/             → Camada de Apresentação (Controllers, Hubs, Middlewares)
-│   ├── 📂 GoodHamburger.Application/     → Camada de Aplicação (Services, DTOs, Validators)
-│   ├── 📂 GoodHamburger.Domain/          → Camada de Domínio (Entities, Enums, Regras de Negócio)
-│   ├── 📂 GoodHamburger.Infrastructure/  → Camada de Infraestrutura (EF Core, Repositories)
-│   ├── 📂 GoodHamburger.Tests/           → Testes Unitários e de Integração
-│   └── 📄 GoodHamburger.sln
-├── 📂 frontend/
-│   └── (projeto Blazor WASM)
-└── 📄 README.md
-```
-
-### Responsabilidades por Camada
-
-#### 1. `GoodHamburger.Domain` (sem dependências)
-
-- **Entities**: `Order`, `OrderItem`, `MenuItem`, `User`
-- **Enums**: `MenuItemType` (Sandwich, Side, Drink), `OrderStatus` (Received, Preparing, Ready, Delivered), `UserRole` (Admin)
-- **Value Objects / Regras**: lógica de cálculo de desconto
-- **Interfaces**: `IOrderRepository`, `IMenuItemRepository`, `IUserRepository`
-
-#### 2. `GoodHamburger.Application` (depende de Domain)
-
-- **DTOs**: `CreateOrderRequest`, `UpdateOrderRequest`, `OrderResponse`, `LoginRequest`, `LoginResponse`
-- **Services**: `OrderService`, `MenuService`, `AuthService`
-- **Interfaces**: `IOrderService`, `IMenuService`, `IAuthService`, `INotificationService`
-- **Validators**: validação de itens duplicados, pedido válido
-- **Mapping**: AutoMapper profiles (Entity ↔ DTO)
-
-#### 3. `GoodHamburger.Infrastructure` (depende de Domain)
-
-- **DbContext**: `GoodHamburgerDbContext` (Entity Framework Core)
-- **Repositories**: `OrderRepository`, `MenuItemRepository`, `UserRepository`
-- **Services**: `NotificationService` (implementação SignalR de `INotificationService`)
-- **Migrations**: versionamento do banco
-- **Seed Data**: popular cardápio inicial + usuário admin padrão
-- **Configurations**: Fluent API para mapeamento das entidades
-
-#### 4. `GoodHamburger.API` (depende de Application e Infrastructure)
-
-- **Controllers**: `OrdersController`, `MenuController`, `AuthController`
-- **Hubs**: `OrderHub` (SignalR para tempo real)
-- **Middlewares**: tratamento global de exceções, autenticação JWT
-- **Program.cs**: DI container, Swagger, CORS, SignalR config
-- **appsettings.json**: connection strings, JWT secrets
-
-#### 5. `GoodHamburger.Tests`
-
-- Testes unitários das regras de desconto
-- Testes unitários dos services
-- Testes de integração dos endpoints (opcional: WebApplicationFactory)
-
----
-
-## 🔌 Endpoints da API
-
-### Autenticação
-
-| Método | Rota              | Auth | Descrição            |
-| ------ | ----------------- | ---- | -------------------- |
-| `POST` | `/api/auth/login` | ❌   | Login do restaurante |
+## 🔌 API — Endpoints
 
 ### Cardápio
 
-| Método | Rota        | Auth | Descrição       |
-| ------ | ----------- | ---- | --------------- |
-| `GET`  | `/api/menu` | ❌   | Listar cardápio |
+| Método | Rota             | Descrição                                          |
+| ------ | ---------------- | -------------------------------------------------- |
+| `GET`  | `/api/menu`      | Lista todos os itens do cardápio com preços e tipos |
 
-### Pedidos — Cliente (Totem)
+### Promoções
 
-| Método | Rota                       | Auth | Descrição                                    |
-| ------ | -------------------------- | ---- | -------------------------------------------- |
-| `POST` | `/api/orders`              | ❌   | Criar novo pedido                            |
-| `GET`  | `/api/orders/{id}`         | ❌   | Consultar pedido por ID                      |
-| `GET`  | `/api/orders/track/{code}` | ❌   | Acompanhar pedido pelo código                |
-| `GET`  | `/api/orders/display`      | ❌   | Pedidos para o painel (em preparo + prontos) |
+| Método | Rota               | Descrição                                                        |
+| ------ | ------------------ | ---------------------------------------------------------------- |
+| `GET`  | `/api/promotions`  | Lista todas as promoções com nomes, descontos, condições e itens |
 
-### Pedidos — Restaurante (Admin)
+### Pedidos
 
-| Método   | Rota                            | Auth | Descrição                                  |
-| -------- | ------------------------------- | ---- | ------------------------------------------ |
-| `GET`    | `/api/admin/orders`             | 🔒   | Listar todos os pedidos (Kanban)           |
-| `PATCH`  | `/api/admin/orders/{id}/status` | 🔒   | Alterar status do pedido (mover no Kanban) |
-| `GET`    | `/api/admin/orders/{id}`        | 🔒   | Detalhes completos do pedido               |
-| `PUT`    | `/api/admin/orders/{id}`        | 🔒   | Atualizar pedido                           |
-| `DELETE` | `/api/admin/orders/{id}`        | 🔒   | Remover pedido                             |
+| Método | Rota          | Descrição                                                   |
+| ------ | ------------- | ----------------------------------------------------------- |
+| `POST` | `/api/orders` | Cria um pedido completo (valida, calcula promoção e salva)  |
 
-### SignalR Hub
+### SignalR
 
-| Rota           | Descrição                           |
-| -------------- | ----------------------------------- |
-| `/hubs/orders` | Hub para atualizações em tempo real |
+| Rota             | Descrição                           |
+| ---------------- | ----------------------------------- |
+| `/hubs/orders`   | Hub para atualizações em tempo real |
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 📨 Criar Pedido — `POST /api/orders`
+
+O frontend envia **todos os itens de uma vez**. O backend valida, calcula a promoção automaticamente e retorna o pedido completo.
+
+### Request
+
+```json
+{
+  "menuItemIds": [1, 4, 5]
+}
+```
+
+### Response — Sucesso (201)
+
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "code": "#A42",
+  "items": [
+    { "menuItemId": 1, "name": "X Burger", "price": 5.00, "type": "Sandwich" },
+    { "menuItemId": 4, "name": "Batata Frita", "price": 2.00, "type": "Side" },
+    { "menuItemId": 5, "name": "Refrigerante", "price": 2.50, "type": "Drink" }
+  ],
+  "subtotal": 9.50,
+  "promotionName": "Combo Completo",
+  "discountPercent": 20,
+  "discountValue": 1.90,
+  "total": 7.60,
+  "status": "Received",
+  "createdAt": "2026-04-24T13:30:00Z"
+}
+```
+
+### Response — Erro (400)
+
+```json
+{
+  "code": "DUPLICATE_SANDWICH",
+  "message": "Só é permitido 1 sanduíche por pedido."
+}
+```
+
+---
+
+## ❌ Códigos de Erro
+
+Erros de domínio retornam `HTTP 400` com `code` e `message` para o frontend tratar.
+
+| Código              | Mensagem                                  | Quando                    |
+| ------------------- | ----------------------------------------- | ------------------------- |
+| `DUPLICATE_SANDWICH`  | Só é permitido 1 sanduíche por pedido.  | 2+ sanduíches no pedido   |
+| `DUPLICATE_SIDE`      | Só é permitido 1 acompanhamento por pedido. | 2+ acompanhamentos    |
+| `DUPLICATE_DRINK`     | Só é permitida 1 bebida por pedido.     | 2+ bebidas no pedido      |
+| `EMPTY_ORDER`         | O pedido deve conter pelo menos 1 item. | Nenhum item enviado       |
+| `INVALID_MENU_ITEM`   | Item do cardápio não encontrado: {id}.  | ID inexistente no cardápio |
+
+### Uso no React
+
+```typescript
+try {
+  const response = await api.post('/api/orders', { menuItemIds: selectedIds });
+  // sucesso — response.data contém o pedido
+} catch (err) {
+  const { code, message } = err.response.data;
+
+  switch (code) {
+    case 'DUPLICATE_SANDWICH':
+    case 'DUPLICATE_SIDE':
+    case 'DUPLICATE_DRINK':
+      toast.error(message);
+      break;
+    case 'EMPTY_ORDER':
+      toast.warn(message);
+      break;
+    case 'INVALID_MENU_ITEM':
+      toast.error(message);
+      break;
+  }
+}
+```
+
+---
+
+## 🔔 SignalR — Tempo Real
+
+O hub `/hubs/orders` emite eventos para manter o frontend sincronizado.
+
+| Evento               | Descrição                                       |
+| -------------------- | ----------------------------------------------- |
+| `NewOrderReceived`   | Novo pedido chegou (notifica admin)             |
+| `OrderStatusChanged` | Pedido mudou de status (notifica display/cliente) |
+
+### Grupos
+
+| Grupo         | Quem recebe                          |
+| ------------- | ------------------------------------ |
+| `admin`       | Painel do restaurante                |
+| `display`     | Tela geral de acompanhamento        |
+| `order-{id}`  | Cliente acompanhando pedido específico |
+
+---
+
+## 🛠️ Stack
 
 ### Backend
 
-- **C# / .NET 8** (ou versão mais recente LTS)
-- **ASP.NET Core Web API**
-- **Entity Framework Core** (Code First)
-- **SignalR** (comunicação em tempo real)
-- **JWT Bearer** (autenticação)
-- **AutoMapper** (mapeamento Entity ↔ DTO)
-- **FluentValidation** (validações)
-- **Swagger / OpenAPI** (documentação)
-- **xUnit + Moq** (testes)
+- **C# / .NET 10** — ASP.NET Core Web API
+- **SignalR** — comunicação em tempo real
+- **Swagger / OpenAPI** — documentação da API
+- **Arquitetura em 4 camadas** (Domain, Application, Infrastructure, API)
+
+### Frontend
+
+- **React** (SPA)
+- **SignalR Client** — tempo real
 
 ### Banco de Dados
 
-- **SQL Server** (Azure SQL Database em produção)
-- **InMemory Provider** (para testes)
-
-### Frontend (mesma repo, pasta `/frontend`)
-
-- **React** (Vite + TypeScript)
-- **SignalR Client Library** (`@microsoft/signalr`)
-- **Tailwind CSS** ou **Vanilla CSS** para estilização premium
-- Duas interfaces no mesmo app:
-  - `/admin` → Painel Kanban (protegido com login)
-  - `/` → Totem de autoatendimento (público)
+- **In-Memory** (fase atual — dados estáticos)
+- **SQL Server** (futuro — EF Core + Migrations)
 
 ---
 
-## ☁️ Deploy - Azure
-
-### Monorepo com Deploys Independentes
-
-Um único repositório, mas cada parte tem sua **pipeline separada** com path filters:
+## 📁 Estrutura do Projeto
 
 ```
 📦 good-hamburger/
-├── backend/**   → dispara backend-ci.yml  → deploy Azure App Service
-├── frontend/**  → dispara frontend-ci.yml → deploy Azure Static Web Apps
-```
-
-### Recursos Azure
-
-| Recurso                   | Uso                                               |
-| ------------------------- | ------------------------------------------------- |
-| **Azure App Service**     | Hospedar a API + SignalR                          |
-| **Azure SQL Database**    | Banco de dados relacional                         |
-| **Azure Static Web Apps** | Hospedar o frontend React                         |
-| **Azure SignalR Service** | Gerenciar conexões WebSocket em escala (opcional) |
-| **GitHub Actions**        | CI/CD pipelines (2 workflows independentes)       |
-
-### Pipeline CI/CD — Backend (`backend-ci.yml`)
-
-Dispara apenas quando há mudanças em `backend/**`:
-
-```yaml
-name: Backend CI/CD
-on:
-  push:
-    branches: [main]
-    paths: ['backend/**']
-  pull_request:
-    paths: ['backend/**']
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - run: dotnet restore
-        working-directory: ./backend
-      - run: dotnet build --no-restore
-        working-directory: ./backend
-      - run: dotnet test --no-build --verbosity normal
-        working-directory: ./backend
-
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - run: dotnet publish -c Release -o ./publish
-        working-directory: ./backend/GoodHamburger.API
-      - uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'good-hamburger-api'
-          package: ./backend/GoodHamburger.API/publish
-```
-
-### Pipeline CI/CD — Frontend (`frontend-ci.yml`)
-
-Dispara apenas quando há mudanças em `frontend/**`:
-
-```yaml
-name: Frontend CI/CD
-on:
-  push:
-    branches: [main]
-    paths: ['frontend/**']
-  pull_request:
-    paths: ['frontend/**']
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - run: npm install
-        working-directory: ./frontend
-      - run: npm run build
-        working-directory: ./frontend
-      - uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: "upload"
-          app_location: "frontend/dist" # Vite gera na pasta dist
-```
-
-### Resultado
-
-```
-Commit no backend/  → roda APENAS backend-ci.yml  → testes + deploy API
-Commit no frontend/ → roda APENAS frontend-ci.yml → build + deploy SWA
-Commit nos dois     → roda AMBOS em paralelo
+├── 📂 backend/
+│   ├── 📂 GoodHamburger.API/             → Controllers, Hubs, Middlewares
+│   ├── 📂 GoodHamburger.Application/     → Services, DTOs, Interfaces
+│   ├── 📂 GoodHamburger.Domain/          → Entities, Enums, Errors, Regras
+│   ├── 📂 GoodHamburger.Infrastructure/  → Repositories, Data (seed)
+│   ├── 📂 GoodHamburger.Tests/           → Testes unitários
+│   └── 📄 GoodHamburger.slnx
+├── 📂 frontend/                          → React app (futuro)
+├── 📄 .gitignore
+└── 📄 README.md
 ```
 
 ---
 
-## 📐 Decisões de Arquitetura
-
-### Estrutura e Domínio
-1. **4 Camadas** — separação clara de responsabilidades, facilita testes e manutenção
-2. **Domain sem dependências** — regras de negócio isoladas, testáveis sem infra
-3. **Repository Pattern** — abstração do acesso a dados via interfaces no Domain
-4. **Desconto no Domain** — lógica de cálculo de desconto vive na camada de domínio
-5. **Seed Data** — cardápio fixo + admin padrão populados via migration/seed
-6. **Validação em duas camadas** — FluentValidation na Application + Data Annotations nos DTOs
-7. **Global Exception Handler** — middleware para padronizar respostas de erro
-
-### Tempo Real e Notificações
-8. **SignalR com 2 grupos** — `display` (clientes) e `admin` (restaurante), sem grupo individual por pedido
-9. **Filtragem no frontend** — SignalR faz broadcast geral, cada cliente filtra localmente pelo seu código
-10. **DB primeiro, SignalR depois** — banco é a fonte da verdade; notificação é best-effort com try/catch
-11. **Polling como fallback** — frontend faz GET a cada ~30s caso SignalR falhe, garantindo eventual consistency
-
-### Autenticação e UX
-12. **JWT simples** — autenticação stateless apenas para o perfil restaurante
-13. **Cliente sem sessão** — código do pedido persiste apenas no frontend (localStorage + URL)
-14. **Pagamento simulado** — foco na experiência do fluxo, sem integração real com gateway
-15. **Código do pedido** — geração de código curto amigável (ex: `#A42`) para exibição no totem/painel
-16. **Duas interfaces, um frontend** — Blazor WASM com rotas separadas (`/` para totem, `/admin` para Kanban)
-
-### Repositório e CI/CD
-17. **Monorepo** — backend e frontend no mesmo repo; mais simples pra um dev solo, um link só pro portfolio
-18. **Path filters no GitHub Actions** — workflows independentes por pasta, deploy separado mesmo no monorepo
-19. **CI obrigatório em PR** — testes rodam automaticamente em pull requests antes do merge
-
----
-
-## ✅ Checklist de Implementação
-
-### Fase 1 — Setup do Monorepo e Domínio
-
-- [ ] Criar estrutura do monorepo (`backend/`, `frontend/`, `.github/workflows/`)
-- [ ] Criar Solution com os 5 projetos em `backend/`
-- [ ] Definir entidades (`Order`, `OrderItem`, `MenuItem`, `User`)
-- [ ] Implementar enums (`MenuItemType`, `OrderStatus`, `UserRole`)
-- [ ] Implementar lógica de cálculo de desconto no Domain
-- [ ] Implementar geração de código do pedido
-- [ ] Definir interfaces dos repositórios
-
-### Fase 2 — Infraestrutura
-
-- [ ] Configurar `DbContext` com Fluent API
-- [ ] Implementar repositórios
-- [ ] Criar Seed Data (cardápio + admin padrão)
-- [ ] Gerar migration inicial
-- [ ] Implementar `NotificationService` (SignalR)
-
-### Fase 3 — Application
-
-- [ ] Criar DTOs de request/response
-- [ ] Implementar `OrderService` e `MenuService`
-- [ ] Implementar `AuthService` (login simples + JWT)
-- [ ] Configurar AutoMapper profiles
-- [ ] Implementar validações com FluentValidation
-
-### Fase 4 — API
-
-- [ ] Criar Controllers (Orders, Menu, Auth, Admin)
-- [ ] Implementar `OrderHub` (SignalR)
-- [ ] Configurar DI, Swagger, CORS, JWT no `Program.cs`
-- [ ] Implementar middleware de exceções
-- [ ] Proteger rotas admin com `[Authorize]`
-
-### Fase 5 — Testes
-
-- [ ] Testes unitários das regras de desconto
-- [ ] Testes unitários dos services
-- [ ] Testes de integração dos endpoints
-- [ ] Testes de validação (itens duplicados, pedido inválido)
-
-### Fase 6 — CI/CD (GitHub Actions)
-
-- [ ] Criar `backend-ci.yml` (build + test + deploy)
-- [ ] Criar `frontend-ci.yml` (build + deploy)
-- [ ] Testar path filters (commit só no backend, só no frontend, nos dois)
-- [ ] Configurar secrets do Azure no GitHub
-
-### Fase 7 — Deploy Azure
-
-- [ ] Configurar Azure SQL Database
-- [ ] Deploy da API no App Service
-- [ ] Configurar Azure SignalR Service (opcional)
-- [ ] Deploy do frontend no Static Web Apps
-
-### Fase 8 — Frontend React (pasta `/frontend`)
-
-- [ ] Setup do projeto React com Vite + TypeScript em `frontend/`
-- [ ] Configurar Axios/Fetch e @microsoft/signalr
-- [ ] **Totem — Cliente:**
-  - [ ] Tela inicial (boas-vindas + painel de prontos)
-  - [ ] Tela de seleção de sanduíche
-  - [ ] Tela de seleção de acompanhamentos (com preview de desconto)
-  - [ ] Tela de resumo do pedido
-  - [ ] Tela de pagamento simulado
-  - [ ] Tela de acompanhamento em tempo real
-  - [ ] Notificação visual + sonora quando pedido pronto
-- [ ] **Admin — Restaurante:**
-  - [ ] Tela de login
-  - [ ] Painel Kanban (drag & drop entre colunas)
-  - [ ] Detalhes do pedido no card
-  - [ ] Indicador de tempo por etapa
-  - [ ] Notificação de novo pedido
-
----
-
-## 🚀 Como Rodar Localmente
-
-```bash
-# Clonar o repositório
-git clone https://github.com/seu-usuario/good-hamburger.git
-cd good-hamburger
-```
+## 🚀 Como Rodar
 
 ### Backend
 
@@ -511,41 +215,26 @@ cd good-hamburger
 # Restaurar dependências
 dotnet restore ./backend
 
-# Aplicar migrations
-dotnet ef database update \
-  --project ./backend/GoodHamburger.Infrastructure \
-  --startup-project ./backend/GoodHamburger.API
-
 # Rodar a API
 dotnet run --project ./backend/GoodHamburger.API
-
-# Rodar testes
-dotnet test ./backend
 ```
 
-> A API estará disponível em `https://localhost:5001` com Swagger em `/swagger`
+> A API estará disponível em `http://localhost:5000` com Swagger em `/swagger`
 
-### Frontend
+### Frontend (futuro)
 
 ```bash
-# Instalar dependências
 cd frontend
 npm install
-
-# Rodar em modo dev
 npm run dev
 ```
-
-> O frontend estará disponível em `http://localhost:5173` (padrão Vite)
 
 ---
 
 ## 📝 Observações
 
-- O cardápio é **fixo** e vem pré-populado (seed). Não há CRUD de menu items.
-- O endpoint `GET /api/menu` apenas consulta os itens disponíveis.
-- O **pagamento é simulado** — não há integração com gateway de pagamento.
-- O **cliente não precisa de cadastro/login** — a experiência é igual a um totem de lanchonete.
-- O **admin** tem login simples (usuário padrão criado via seed).
-- Foco principal é demonstrar **organização de código**, **modelagem do domínio**, **decisões técnicas** e **experiência do usuário**.
-- Prazo sugerido do desafio: **7 dias corridos**.
+- O cardápio é **fixo** (dados estáticos). Não há CRUD de itens.
+- O **pagamento é simulado** — sem integração com gateway.
+- O **cliente não precisa de login** — experiência de totem de autoatendimento.
+- A promoção é calculada **automaticamente** no backend ao criar o pedido.
+- Foco: **organização de código**, **modelagem de domínio** e **validações robustas**.
