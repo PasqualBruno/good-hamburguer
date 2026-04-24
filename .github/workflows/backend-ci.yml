@@ -1,0 +1,33 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore backend/GoodHamburger.slnx
+
+    - name: Build
+      run: dotnet build backend/GoodHamburger.slnx --no-restore --configuration Release
+
+    - name: Test
+      run: dotnet test backend/GoodHamburger.slnx --no-build --configuration Release --verbosity normal
