@@ -102,3 +102,39 @@
   animation-delay: 0.5s;
   opacity: 0;
 }
+@media (max-width: 480px) {
+  .landing__logo {
+    font-size: 3rem;
+  }
+
+  .landing__title {
+    font-size: 1.8rem;
+  }
+
+  .landing__cards {
+    gap: 12px;
+    flex-wrap: nowrap; /* Force side-by-side */
+  }
+
+  .landing__card {
+    width: 160px;
+    padding: 24px 12px;
+    gap: 8px;
+  }
+
+  .landing__card-icon {
+    font-size: 2.5rem;
+  }
+
+  .landing__card-title {
+    font-size: 0.95rem;
+  }
+
+  .landing__card-desc {
+    display: none; /* Hide desc on mobile for better fit */
+  }
+
+  .landing__footer {
+    margin-top: 40px;
+  }
+}

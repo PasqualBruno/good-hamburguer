@@ -134,3 +134,57 @@
 .order-summary__btn--clear:hover {
   color: var(--accent-secondary);
 }
+@media (max-width: 768px) {
+  .order-summary {
+    padding: 0;
+    background: transparent;
+    border: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    height: auto;
+  }
+
+  .order-summary__title,
+  .order-summary__empty,
+  .order-summary__items,
+  .order-summary__divider,
+  .order-summary__row--subtotal,
+  .order-summary__row--promo-name,
+  .order-summary__btn--clear {
+    display: none;
+  }
+
+  .order-summary__row--total {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 4px;
+  }
+
+  .order-summary__row--total span:first-child {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .order-summary__row--total span:last-child {
+    font-size: 1.2rem;
+  }
+
+  .order-summary__row--promo {
+    font-size: 0.85rem;
+    background: rgba(34, 197, 94, 0.1);
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+
+  .order-summary__btn--confirm {
+    width: 100%;
+    max-width: none;
+    padding: 16px;
+    font-size: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  }
+}

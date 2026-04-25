@@ -210,3 +210,55 @@
   color: var(--text-muted);
   font-size: 1rem;
 }
+@media (max-width: 480px) {
+  .order-tracking {
+    padding: 20px 16px;
+  }
+
+  .order-tracking__card {
+    padding: 32px 20px;
+    gap: 16px;
+  }
+
+  .order-tracking__code {
+    font-size: 2.2rem;
+  }
+
+  .order-tracking__progress {
+    margin: 8px 0;
+  }
+
+  .order-tracking__step-dot {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .order-tracking__step-line {
+    top: 14px;
+  }
+
+  .order-tracking__status-msg {
+    font-size: 1.1rem;
+  }
+
+  .order-tracking__status-desc {
+    font-size: 0.8rem;
+    max-width: 260px;
+  }
+
+  .order-tracking__total {
+    font-size: 1.2rem;
+  }
+
+  .order-tracking__btn {
+    padding: 10px 24px;
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  .order-tracking__item-chip {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+}

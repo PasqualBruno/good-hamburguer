@@ -113,3 +113,17 @@
     padding: 16px;
   }
 }
+
+@media (max-width: 768px) {
+  .kitchen__header {
+    padding: 12px 20px;
+  }
+
+  .kitchen__board {
+    padding: 12px;
+    gap: 32px; /* Espaço maior entre as 4 seções (colunas) */
+    display: flex;
+    flex-direction: column; /* Pilha vertical */
+    overflow-x: hidden;
+  }
+}

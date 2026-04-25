@@ -150,3 +150,104 @@
 .kanban-card__btn--cancel:hover {
   background: rgba(239, 68, 68, 0.3);
 }
+
+@media (max-width: 768px) {
+  .kanban-column {
+    min-width: 0;
+    width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  .kanban-column__header {
+    display: flex;
+    padding: 0 0 12px 0; /* No pill shape, just text spacing */
+    background: transparent;
+    border: none;
+    margin-bottom: 8px;
+    position: static;
+  }
+
+  .kanban-column__title {
+    font-size: 0.9rem;
+  }
+
+  .kanban-column__count {
+    font-size: 0.75rem;
+    padding: 2px 0;
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .kanban-column__body {
+    padding: 4px 0 12px 0;
+    display: flex;
+    flex-direction: row; /* Horizontal scroll! */
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar for cleaner look */
+  }
+
+  .kanban-column__body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .kanban-card {
+    padding: 10px 14px;
+    gap: 8px;
+    border-radius: var(--radius-sm);
+    width: 200px; /* Fixed width for horizontal scroll */
+    flex-shrink: 0; /* Don't let cards squeeze */
+  }
+
+  .kanban-card__code {
+    font-size: 1rem;
+  }
+
+  .kanban-card__time {
+    font-size: 0.7rem;
+  }
+
+  .kanban-card__items {
+    display: flex;
+    flex-direction: column; /* One item per line */
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .kanban-card__item-chip {
+    font-size: 0.75rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: block; /* Ensure it takes a full line */
+  }
+
+  .kanban-card__item-chip:not(:last-child)::after {
+    content: ""; /* Remove comma */
+  }
+
+  .kanban-card__total {
+    font-size: 0.85rem;
+    margin: 8px 0;
+  }
+
+  .kanban-card__promo {
+    font-size: 0.7rem;
+  }
+
+  .kanban-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* More space between buttons */
+    margin-top: 12px; /* More space from items */
+  }
+
+  .kanban-card__btn {
+    padding: 6px;
+    font-size: 0.75rem;
+  }
+}

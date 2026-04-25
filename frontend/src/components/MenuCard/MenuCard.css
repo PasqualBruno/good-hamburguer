@@ -95,3 +95,39 @@
   font-weight: 700;
   animation: bounceIn 400ms ease forwards;
 }
+@media (max-width: 768px) {
+  .menu-card {
+    padding: 12px;
+    gap: 8px;
+    border-radius: var(--radius-md);
+  }
+
+  .menu-card__image-wrapper {
+    width: 60px;
+    height: 60px;
+  }
+
+  .menu-card__emoji {
+    font-size: 2rem;
+  }
+
+  .menu-card__name {
+    font-size: 0.85rem;
+  }
+
+  .menu-card__price {
+    font-size: 1rem;
+  }
+
+  .menu-card__type {
+    font-size: 0.6rem;
+  }
+
+  .menu-card__check {
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+    top: 6px;
+    right: 6px;
+  }
+}
