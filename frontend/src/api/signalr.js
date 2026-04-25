@@ -3,10 +3,11 @@ import * as signalR from '@microsoft/signalr';
 const HUB_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5020'}/hubs/orders`;
 
 export function createConnection() {
+  console.log('[SignalR] Creating connection to:', HUB_URL);
   return new signalR.HubConnectionBuilder()
     .withUrl(HUB_URL)
-    .withAutomaticReconnect([0, 2000, 5000, 10000])
-    .configureLogging(signalR.LogLevel.Warning)
+    .withAutomaticReconnect([0, 2000, 5000, 10000, 20000])
+    .configureLogging(signalR.LogLevel.Information)
     .build();
 }
 
