@@ -9,8 +9,17 @@ Sistema de pedidos para lanchonete com promoções automáticas. Backend em **C#
 ## ⚡ Funcionalidades
 
 - **Tempo Real (SignalR)**: Atualizações instantâneas entre Totem, Cozinha e Cliente.
+
+<img width="854" height="480" alt="real time" src="https://github.com/user-attachments/assets/a86fe53b-9dc6-46de-9722-7f95cf317b04" />
+
 - **Painel Kanban**: Gestão visual e profissional de pedidos para o restaurante.
+
+<img width="854" height="480" alt="kanban" src="https://github.com/user-attachments/assets/1fba58eb-e574-4dc0-a089-fa555fef2b88" />
+
 - **Promoções Automáticas**: Cálculo inteligente do melhor desconto no carrinho.
+- 
+<img width="854" height="480" alt="promotions" src="https://github.com/user-attachments/assets/df1be09b-dc02-4ae1-9733-ecbae08c17ad" />
+
 - **Fluxo de Status**: Validação rigorosa de transições (ex: Received → Preparing).
 - **Segurança JWT**: Acesso protegido por token às rotas administrativas.
 - **Arquitetura Limpa**: Estrutura profissional organizada em 4 camadas.
