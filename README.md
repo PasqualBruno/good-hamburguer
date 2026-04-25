@@ -1,5 +1,7 @@
 # 🍔 Good Hamburger
 
+**🚀 [Acesse o Sistema (Live Demo)](https://good-hamburguer-totem.netlify.app/)**
+
 Sistema de pedidos para lanchonete com promoções automáticas. Backend em **C# / .NET 10** com **SignalR** para tempo real, frontend em **React**.
 
 ---
@@ -186,8 +188,8 @@ O hub `/hubs/orders` emite eventos para manter o frontend sincronizado.
 
 ### Banco de Dados
 
-- **In-Memory** (fase atual — dados estáticos)
-- **SQL Server** (futuro — EF Core + Migrations)
+- **SQLite** (Migrations e Seed automáticos ao iniciar)
+- **SQL Server** (Suporte futuro)
 
 ---
 
@@ -202,7 +204,7 @@ O hub `/hubs/orders` emite eventos para manter o frontend sincronizado.
 │   ├── 📂 GoodHamburger.Infrastructure/  → Repositories, Data (seed)
 │   ├── 📂 GoodHamburger.Tests/           → Testes unitários
 │   └── 📄 GoodHamburger.slnx
-├── 📂 frontend/                          → React app (futuro)
+├── 📂 frontend/                          → React app (Vite + Vanilla CSS)
 ├── 📄 .gitignore
 └── 📄 README.md
 ```
@@ -223,11 +225,38 @@ dotnet run --project ./backend/GoodHamburger.API
 
 > A API estará disponível em `http://localhost:5020`.
 
+### Frontend
+
+```bash
+cd frontend
+
+# Instalar dependências
+npm install
+
+# Rodar em modo de desenvolvimento
+npm run dev
+```
+
+> O frontend estará disponível em `http://localhost:5173`.
+
 ### 📖 Documentação Interativa (Scalar UI)
 
 No .NET 10, utilizamos o **Scalar** para documentação. Ele substitui o Swagger tradicional com uma interface mais moderna.
 
 - **Acesse em:** `http://localhost:5020/scalar/v1`
+
+---
+
+## 🌐 Deployment
+
+O projeto está configurado para deploy contínuo via GitHub:
+
+- **API (Backend)**: Hospedada no **Heroku** usando Docker (`heroku.yml`).
+- **Web (Frontend)**: Hospedado no **Netlify** (`netlify.toml`).
+
+### Variáveis de Ambiente (Netlify)
+Para o frontend funcionar, adicione a variável:
+- `VITE_API_URL`: URL da sua API no Heroku (ex: `https://seu-app.herokuapp.com`).
 
 ---
 
