@@ -67,11 +67,9 @@ var app = builder.Build();
 
 app.UseMiddleware<DomainErrorMiddleware>();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
+// Enable OpenAPI and Scalar UI in all environments for portfolio/demo purposes
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
