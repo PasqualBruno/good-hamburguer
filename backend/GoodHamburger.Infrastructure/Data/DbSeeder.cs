@@ -32,7 +32,7 @@ public static class DbSeeder
 
         if (!context.Users.Any())
         {
-            context.Users.Add(new User(Guid.NewGuid(), "admin@goodhamburger.com", "admin123", "Restaurante Admin"));
+            context.Users.Add(new User(Guid.NewGuid(), "admin@goodhamburguer.com", "admin123", "Restaurante Admin"));
         }
 
         context.SaveChanges();

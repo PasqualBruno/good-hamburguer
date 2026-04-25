@@ -297,7 +297,7 @@ Para acessar as rotas de gerenciamento (Kanban), o restaurante deve fazer login.
 | `/api/auth/login` | `POST` | ❌ | Email e senha para obter o JWT token |
 
 **Credenciais padrão (Seed):**
-- **Email:** `admin@goodhamburger.com`
+- **Email:** `admin@goodhamburguer.com`
 - **Senha:** `admin123`
 
 ---
