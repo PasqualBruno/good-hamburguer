@@ -67,15 +67,15 @@ var app = builder.Build();
 
 app.UseMiddleware<DomainErrorMiddleware>();
 
-// Enable OpenAPI and Scalar UI in all environments for portfolio/demo purposes
-app.MapOpenApi();
-app.MapScalarApiReference();
-
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Enable OpenAPI and Scalar UI in all environments for portfolio/demo purposes
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 app.MapControllers();
 app.MapHub<OrderHub>("/hubs/orders");
@@ -83,7 +83,7 @@ app.MapHub<OrderHub>("/hubs/orders");
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<GoodHamburgerDbContext>();
-    context.Database.Migrate();
+    context.Database.EnsureCreated();
     DbSeeder.Seed(context);
 }
 
