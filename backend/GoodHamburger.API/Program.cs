@@ -73,9 +73,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Enable OpenAPI and Scalar UI in all environments for portfolio/demo purposes
-app.MapOpenApi();
-app.MapScalarApiReference();
+// app.MapOpenApi();
+// app.MapScalarApiReference();
 
 app.MapControllers();
 app.MapHub<OrderHub>("/hubs/orders");
